@@ -6,7 +6,7 @@ import effects.EffectRarity
 import effects.TurnBasedModifier
 
 class MultiplyNextGold(
-    private val endingTurn: Int,
+    endingTurn: Int,
     private val multiplyAmount: Long,
     override val rarity: EffectRarity,
 ): TurnBasedModifier(

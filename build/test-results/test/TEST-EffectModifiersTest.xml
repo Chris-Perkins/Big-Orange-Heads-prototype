@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="EffectModifiersTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2021-12-17T04:19:30" hostname="BIG-BOI" time="0.018">
+  <properties/>
+  <testcase name="multiply gold modifier multiplies base gold()" classname="EffectModifiersTest" time="0.014"/>
+  <testcase name="multiply - add to next gold effect - base modifies base gold()" classname="EffectModifiersTest" time="0.001"/>
+  <testcase name="add to next gold - multiply - base is (base * multiply + added amount)()" classname="EffectModifiersTest" time="0.0"/>
+  <testcase name="chain multiplication effects stack()" classname="EffectModifiersTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

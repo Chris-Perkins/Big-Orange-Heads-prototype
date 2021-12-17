@@ -4,7 +4,7 @@ import effects.Effect
 import gamestate.GameManager
 import gamestate.Player
 
-class AddGold(private val goldAmount: Long): Effect() {
+class AddGold(goldAmount: Long): Effect() {
     override var baseGold = goldAmount
 
     override fun getText(): String
