@@ -1,11 +1,10 @@
 package effects
 
 import gamestate.GameManager
+import gamestate.GameStateChange
 import gamestate.Player
 
-abstract class Effect {
-    open var baseGold: Long = 0
-
-    abstract fun getText(): String
-    abstract fun performEffect(gameManager: GameManager, player: Player)
+interface Effect {
+    fun getGameStateChange(gameManager: GameManager): GameStateChange
+    fun isExpired(gameManager: GameManager): Boolean
 }

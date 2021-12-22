@@ -1,16 +1,15 @@
 package effects.wishes
 
-import effects.Effect
+import effects.TurnBasedExpirationEffect
 import gamestate.GameManager
-import gamestate.Player
+import gamestate.GameStateChange
 
-class AddGold(goldAmount: Long): Effect() {
-    override var baseGold = goldAmount
-
-    override fun getText(): String
-        = "Receive $baseGold gold"
-
-    override fun performEffect(gameManager: GameManager, player: Player) {
-        gameManager.addGoldAmount(baseGold)
-    }
+class AddGold(
+    private val goldAmount: Long,
+    expireOnTurn: Int
+): TurnBasedExpirationEffect(
+    expireOnTurn
+) {
+    override fun getGameStateChange(gameManager: GameManager)
+        = GameStateChange(playerGoldGain = goldAmount)
 }
