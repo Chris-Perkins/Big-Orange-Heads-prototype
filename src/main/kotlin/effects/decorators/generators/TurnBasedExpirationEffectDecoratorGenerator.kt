@@ -1,4 +1,4 @@
-package effects.decorators.generators.types
+package effects.decorators.generators
 
 import effects.EffectDecoratorGenerator
 import gamestate.GameManager

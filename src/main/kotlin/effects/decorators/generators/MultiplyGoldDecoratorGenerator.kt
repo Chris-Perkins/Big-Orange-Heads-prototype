@@ -1,10 +1,9 @@
 package effects.decorators.generators
 
 import effects.Effect
-import effects.EffectDecorator
 import effects.EffectDecoratorGeneratorPriority
+import effects.EffectDecorator
 import effects.decorators.MultiplyGoldEffectDecorator
-import effects.decorators.generators.types.TurnBasedExpirationEffectDecoratorGenerator
 
 class MultiplyGoldDecoratorGenerator(
     override val priority: EffectDecoratorGeneratorPriority = EffectDecoratorGeneratorPriority.MULTIPLY,

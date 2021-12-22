@@ -1,7 +1,6 @@
 package gamestate
 
 import effects.Effect
-import effects.EffectDecorator
 import effects.EffectDecoratorGenerator
 
 class GameManager(
@@ -18,26 +17,27 @@ class GameManager(
     fun getCurrentTurn(): Int = currentTurn
     fun getGoldAmount(): Long = goldAmount
 
+    fun addEffect(effect: Effect) = activeEffects.add(effect)
+    fun addEffectDecoratorGenerator(effectDecoratorGenerator: EffectDecoratorGenerator) =
+        activeEffectDecoratorGenerators.add(effectDecoratorGenerator)
+
     /**
      * Plays the game, performing turns until the game is over.
      */
     fun playGame() {
         while (currentTurn <= numberOfTurns || isPlayerWinGameState() || isGenieWinGameState()) {
             performTurn()
-            incrementTurnCount()
+            currentTurn++
         }
 
-        if (isPlayerWinGameState())
-        {
+        if (isPlayerWinGameState()) {
             println("players win!")
-        }
-        else
-        {
+        } else {
             println("the genie wins!")
         }
     }
 
-    fun performTurn() {
+    private fun performTurn() {
         removeExpiredEffects()
 
         requestPlayerCardChoices()
@@ -68,10 +68,6 @@ class GameManager(
         return combinedOutcome
     }
 
-    private fun applyGameStateChange(gameStateChange: GameStateChange) {
-        goldAmount += (gameStateChange.playerGoldGain ?: 0)
-    }
-
     /**
      * Runs all decorator generators on the input effect, and outputs the resulting chained outcome effect
      */
@@ -86,12 +82,10 @@ class GameManager(
         return outcomeEffect.getGameStateChange(this)
     }
 
-    fun incrementTurnCount() = currentTurn++
+    private fun applyGameStateChange(gameStateChange: GameStateChange) {
+        goldAmount += (gameStateChange.playerGoldGain ?: 0)
+    }
 
     private fun isPlayerWinGameState(): Boolean = false
     private fun isGenieWinGameState(): Boolean = false
-
-    fun addEffect(effect: Effect) = activeEffects.add(effect)
-    fun addEffectDecoratorGenerator(effectDecoratorGenerator: EffectDecoratorGenerator) =
-        activeEffectDecoratorGenerators.add(effectDecoratorGenerator)
 }

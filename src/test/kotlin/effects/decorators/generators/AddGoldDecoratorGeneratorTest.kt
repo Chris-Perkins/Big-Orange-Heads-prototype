@@ -1,6 +1,5 @@
 package effects.decorators.generators
 
-import effects.EffectDecoratorGeneratorPriority
 import effects.wishes.AddGold
 import gamestate.GameManager
 import org.junit.jupiter.api.Test
