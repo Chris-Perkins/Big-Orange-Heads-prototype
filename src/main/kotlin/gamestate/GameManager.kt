@@ -4,26 +4,15 @@ import effects.Effect
 import effects.EffectDecoratorGenerator
 
 class GameManager(
-    val players: List<Player>,
-    private val numberOfTurns: Int = DEFAULT_NUM_TURNS,
-    private val activeEffectDecoratorGenerators: MutableList<EffectDecoratorGenerator> = ArrayList(),
-    private val activeEffects: MutableList<Effect> = ArrayList(),
-    private var goldAmount: Long = 0,
-    private var currentTurn: Int = 1,
+    private var gameState: GameState,
 ) {
-    companion object {
-        private const val DEFAULT_NUM_TURNS = 10
-    }
-
-    fun getCurrentTurn(): Int = currentTurn
-
     /**
      * Plays the game, performing turns until the game is over.
      */
     fun playGame() {
-        while (currentTurn <= numberOfTurns || isPlayerWinGameState() || isGenieWinGameState()) {
+        while (gameState.currentTurn <= gameState.maxNumberOfTurns || isPlayerWinGameState() || isGenieWinGameState()) {
             performTurn()
-            currentTurn++
+            gameState.copy(currentTurn = gameState.currentTurn + 1)
         }
 
         if (isPlayerWinGameState()) {
@@ -40,19 +29,24 @@ class GameManager(
 
         removeExpiredEffectsAndDecorators()
         // Apply effects individually as effects may modify the effects of other effects
-        for (effect in activeEffects) {
+        for (effect in gameState.activeEffects) {
             val gameStateChangeForDecoratedEffect = getTotalGameStateChangeForEffect(effect)
             applyGameStateChange(gameStateChangeForDecoratedEffect)
         }
     }
 
     private fun removeExpiredEffectsAndDecorators() {
-        activeEffectDecoratorGenerators.removeAll { e -> e.isExpired(this) }
-        activeEffects.removeAll { e -> e.isExpired(this) }
-
-        for (player in players) {
-            player.playerDecoratorGenerators.removeAll { e -> e.isExpired(this) }
-        }
+        gameState = gameState.copy(
+            activeEffectDecoratorGenerators =
+                gameState.activeEffectDecoratorGenerators.filter { dg -> !dg.isExpired(gameState) },
+            activeEffects = gameState.activeEffects.filter { e -> !e.isExpired(gameState) },
+            players = gameState.players.map { player ->
+                player.copy(
+                    playerDecoratorGenerators =
+                        player.playerDecoratorGenerators.filter { dg -> dg.isExpired(gameState) }
+                )
+            },
+        )
     }
 
     private fun requestPlayerCardChoices() {}
@@ -71,7 +65,7 @@ class GameManager(
      * Gets the decorator generators which should be applied to the effects of an individual player
      */
     private fun getDecoratorGeneratorsForPlayer(player: Player): List<EffectDecoratorGenerator>
-        = activeEffectDecoratorGenerators + player.playerDecoratorGenerators
+        = gameState.activeEffectDecoratorGenerators + player.playerDecoratorGenerators
 
     /**
      * Runs all decorator generators on the input effect, and outputs the resulting chained outcome effect
@@ -84,12 +78,15 @@ class GameManager(
         for (decorator in sortedEffectDecoratorGenerators) {
             outcomeEffect = decorator.generateEffectDecorator(effect)
         }
-        return outcomeEffect.getGameStateChange(this)
+        return outcomeEffect.getGameStateChange(gameState)
     }
 
     private fun applyGameStateChange(gameStateChange: GameStateChange) {
-        goldAmount += (gameStateChange.goldGain ?: 0)
-        activeEffectDecoratorGenerators.addAll(gameStateChange.addedGameEffectDecorators)
+        gameState = gameState.copy(
+            gold = gameState.gold + (gameStateChange.goldGain ?: 0),
+            activeEffectDecoratorGenerators =
+                gameState.activeEffectDecoratorGenerators + gameStateChange.addedGameEffectDecorators
+        )
     }
 
     private fun isPlayerWinGameState(): Boolean = false

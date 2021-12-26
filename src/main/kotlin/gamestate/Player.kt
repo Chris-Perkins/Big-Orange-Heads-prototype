@@ -3,10 +3,8 @@ package gamestate
 import effects.EffectDecorator
 import effects.EffectDecoratorGenerator
 
-class Player(
+data class Player(
     val name: String,
-    val playerDecoratorGenerators: MutableList<EffectDecoratorGenerator> = ArrayList(),
-    private var isWearingBigOrangeHead: Boolean = false,
-) {
-    fun getIsWearingBigOrangeHead(): Boolean = isWearingBigOrangeHead
-}
+    val playerDecoratorGenerators: List<EffectDecoratorGenerator> = ArrayList(),
+    val isWearingBigOrangeHead: Boolean = false,
+)

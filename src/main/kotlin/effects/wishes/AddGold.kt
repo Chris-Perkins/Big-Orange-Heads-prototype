@@ -1,7 +1,7 @@
 package effects.wishes
 
 import effects.Effect
-import gamestate.GameManager
+import gamestate.GameState
 import gamestate.GameStateChange
 import gamestate.Player
 
@@ -9,9 +9,9 @@ class AddGold(
     override val sourcePlayer: Player,
     private val goldAmount: Long,
 ): Effect {
-    override fun getGameStateChange(gameManager: GameManager)
+    override fun getGameStateChange(gameState: GameState)
         = GameStateChange(goldGain = goldAmount)
 
-    override fun isExpired(gameManager: GameManager): Boolean
+    override fun isExpired(gameState: GameState): Boolean
         = false
 }

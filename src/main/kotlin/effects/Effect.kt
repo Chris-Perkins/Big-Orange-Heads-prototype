@@ -1,6 +1,7 @@
 package effects
 
 import gamestate.GameManager
+import gamestate.GameState
 import gamestate.GameStateChange
 import gamestate.Player
 
@@ -14,10 +15,10 @@ interface Effect {
      * @return An object representing how the GameState should
      * be changed as a result of this effect being performed
      */
-    fun getGameStateChange(gameManager: GameManager): GameStateChange
+    fun getGameStateChange(gameState: GameState): GameStateChange
 
     /**
      * @return Whether the effect is expired and should be deleted
      */
-    fun isExpired(gameManager: GameManager): Boolean
+    fun isExpired(gameState: GameState): Boolean
 }

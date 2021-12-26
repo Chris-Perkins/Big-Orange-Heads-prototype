@@ -2,7 +2,7 @@ package effects.decorators
 
 import effects.Effect
 import effects.EffectDecorator
-import gamestate.GameManager
+import gamestate.GameState
 import gamestate.GameStateChange
 import gamestate.Player
 
@@ -15,9 +15,9 @@ class ExpiringEffectDecorator(
 ): EffectDecorator {
     override val sourcePlayer: Player = baseEffect.sourcePlayer
 
-    override fun getGameStateChange(gameManager: GameManager): GameStateChange
-        = baseEffect.getGameStateChange(gameManager)
+    override fun getGameStateChange(gameState: GameState): GameStateChange
+        = baseEffect.getGameStateChange(gameState)
 
-    override fun isExpired(gameManager: GameManager): Boolean
-        = gameManager.getCurrentTurn() >= expiresOnTurnNumber
+    override fun isExpired(gameState: GameState): Boolean
+        = gameState.currentTurn >= expiresOnTurnNumber
 }

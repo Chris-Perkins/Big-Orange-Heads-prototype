@@ -1,10 +1,10 @@
 package effects
 
-import gamestate.GameManager
+import gamestate.GameState
 
 interface EffectDecoratorGenerator {
     val priority: EffectDecoratorGeneratorPriority
 
     fun generateEffectDecorator(baseEffect: Effect): EffectDecorator
-    fun isExpired(gameManager: GameManager): Boolean
+    fun isExpired(gameState: GameState): Boolean
 }
