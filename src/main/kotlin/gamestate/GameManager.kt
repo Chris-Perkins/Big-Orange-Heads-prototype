@@ -15,11 +15,6 @@ class GameManager(
     }
 
     fun getCurrentTurn(): Int = currentTurn
-    fun getGoldAmount(): Long = goldAmount
-
-    fun addEffect(effect: Effect) = activeEffects.add(effect)
-    fun addEffectDecoratorGenerator(effectDecoratorGenerator: EffectDecoratorGenerator) =
-        activeEffectDecoratorGenerators.add(effectDecoratorGenerator)
 
     /**
      * Plays the game, performing turns until the game is over.
@@ -44,8 +39,10 @@ class GameManager(
         requestPlayerWishChoices()
         requestGenieTwistChoice()
 
-        val turnGameChange = getGameStateChange()
-        applyGameStateChange(turnGameChange)
+        val turnGameChanges = getGameStateChanges()
+        for (gameStateChange in turnGameChanges) {
+            applyGameStateChange(gameStateChange)
+        }
     }
 
     private fun removeExpiredEffects() {
@@ -60,12 +57,9 @@ class GameManager(
     /**
      * Gets the game's state change based on all active effects and their decorators
      */
-    private fun getGameStateChange(): GameStateChange {
+    private fun getGameStateChanges(): List<GameStateChange> {
         val sortedDecoratorGenerators = activeEffectDecoratorGenerators.sortedBy { dg -> dg.priority.sortOrder }
-        val totalOutcome =
-            activeEffects.map { baseEffect -> getGameStateChangeForEffect(baseEffect, sortedDecoratorGenerators) }
-        val combinedOutcome = totalOutcome.reduce { v1, v2 -> v1 + v2 }
-        return combinedOutcome
+        return activeEffects.map { baseEffect -> getGameStateChangeForEffect(baseEffect, sortedDecoratorGenerators) }
     }
 
     /**
@@ -83,7 +77,8 @@ class GameManager(
     }
 
     private fun applyGameStateChange(gameStateChange: GameStateChange) {
-        goldAmount += (gameStateChange.playerGoldGain ?: 0)
+        goldAmount += (gameStateChange.goldGain ?: 0)
+        activeEffectDecoratorGenerators.addAll(gameStateChange.addedGameEffectDecorators)
     }
 
     private fun isPlayerWinGameState(): Boolean = false
