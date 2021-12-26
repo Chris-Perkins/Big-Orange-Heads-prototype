@@ -15,7 +15,8 @@ class AddGoldPerBaseGoldDecorator(
     override fun getGameStateChange(gameState: GameState): GameStateChange {
         val baseChange = baseEffect.getGameStateChange(gameState)
         return baseChange.copy(
-            additionalGoldPerBaseGoldGain = baseChange.additionalGoldPerBaseGoldGain + additionalGoldPerBaseGold)
+            additionalGoldPerBaseGoldGain = baseChange.additionalGoldPerBaseGoldGain + additionalGoldPerBaseGold
+        )
     }
 
     override fun isExpired(gameState: GameState): Boolean =
