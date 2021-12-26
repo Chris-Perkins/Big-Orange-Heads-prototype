@@ -4,6 +4,7 @@ import effects.Effect
 import effects.EffectDecoratorGenerator
 
 class GameManager(
+    val players: List<Player>,
     private val numberOfTurns: Int = DEFAULT_NUM_TURNS,
     private val activeEffectDecoratorGenerators: MutableList<EffectDecoratorGenerator> = ArrayList(),
     private val activeEffects: MutableList<Effect> = ArrayList(),
@@ -33,21 +34,25 @@ class GameManager(
     }
 
     private fun performTurn() {
-        removeExpiredEffects()
-
         requestPlayerCardChoices()
         requestPlayerWishChoices()
         requestGenieTwistChoice()
 
-        val turnGameChanges = getGameStateChanges()
-        for (gameStateChange in turnGameChanges) {
-            applyGameStateChange(gameStateChange)
+        removeExpiredEffectsAndDecorators()
+        // Apply effects individually as effects may modify the effects of other effects
+        for (effect in activeEffects) {
+            val gameStateChangeForDecoratedEffect = getTotalGameStateChangeForEffect(effect)
+            applyGameStateChange(gameStateChangeForDecoratedEffect)
         }
     }
 
-    private fun removeExpiredEffects() {
+    private fun removeExpiredEffectsAndDecorators() {
         activeEffectDecoratorGenerators.removeAll { e -> e.isExpired(this) }
         activeEffects.removeAll { e -> e.isExpired(this) }
+
+        for (player in players) {
+            player.playerDecoratorGenerators.removeAll { e -> e.isExpired(this) }
+        }
     }
 
     private fun requestPlayerCardChoices() {}
@@ -57,15 +62,21 @@ class GameManager(
     /**
      * Gets the game's state change based on all active effects and their decorators
      */
-    private fun getGameStateChanges(): List<GameStateChange> {
-        val sortedDecoratorGenerators = activeEffectDecoratorGenerators.sortedBy { dg -> dg.priority.sortOrder }
-        return activeEffects.map { baseEffect -> getGameStateChangeForEffect(baseEffect, sortedDecoratorGenerators) }
+    private fun getTotalGameStateChangeForEffect(effect: Effect): GameStateChange {
+        val sortedDecoratorGenerators = getDecoratorGeneratorsForPlayer(effect.sourcePlayer)
+        return getGameStateChangeForEffectAfterApplyingDecorators(effect, sortedDecoratorGenerators)
     }
+
+    /**
+     * Gets the decorator generators which should be applied to the effects of an individual player
+     */
+    private fun getDecoratorGeneratorsForPlayer(player: Player): List<EffectDecoratorGenerator>
+        = activeEffectDecoratorGenerators + player.playerDecoratorGenerators
 
     /**
      * Runs all decorator generators on the input effect, and outputs the resulting chained outcome effect
      */
-    private fun getGameStateChangeForEffect(
+    private fun getGameStateChangeForEffectAfterApplyingDecorators(
         effect: Effect,
         sortedEffectDecoratorGenerators: List<EffectDecoratorGenerator>,
     ): GameStateChange {
