@@ -10,7 +10,7 @@ class AddGold(
     private val goldAmount: Long,
 ): Effect {
     override fun getGameStateChange(gameState: GameState)
-        = GameStateChange(goldGain = goldAmount)
+        = GameStateChange(baseGoldGain = goldAmount)
 
     override fun isExpired(gameState: GameState): Boolean
         = false

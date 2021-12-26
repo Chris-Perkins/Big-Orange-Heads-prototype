@@ -3,9 +3,9 @@ package effects.decorators.generators
 import effects.Effect
 import effects.EffectDecoratorGeneratorPriority
 import effects.EffectDecorator
-import effects.decorators.AddGoldEffectDecorator
+import effects.decorators.AddBaseGoldEffectDecorator
 
-class AddGoldDecoratorGenerator(
+class AddBaseGoldDecoratorGenerator(
     override val priority: EffectDecoratorGeneratorPriority = EffectDecoratorGeneratorPriority.ADD,
     private val addAmount: Long,
     expireOnTurn: Int
@@ -13,5 +13,5 @@ class AddGoldDecoratorGenerator(
     expireOnTurn = expireOnTurn
 ) {
     override fun generateEffectDecorator(baseEffect: Effect): EffectDecorator =
-        AddGoldEffectDecorator(baseEffect = baseEffect, addAmount = addAmount)
+        AddBaseGoldEffectDecorator(baseEffect = baseEffect, addAmount = addAmount)
 }

@@ -1,12 +1,13 @@
 package effects.decorators.generators
 
+import effects.decorators.AddGoldPerBaseGoldDecorator
 import effects.wishes.AddGold
 import gamestate.GameState
-import gamestate.GameStateChange
 import gamestate.Player
 import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
 
-class MultiplyGoldDecoratorGeneratorTest {
+class AddGoldPerBaseGoldDecoratorGeneratorTest {
     private val dummyPlayer = Player(name = "dum")
     private val dummyGameState = GameState(
         players = listOf(dummyPlayer)
@@ -20,11 +21,15 @@ class MultiplyGoldDecoratorGeneratorTest {
             sourcePlayer = dummyPlayer,
             goldAmount = baseAmount,
         )
-        val generator = MultiplyGoldDecoratorGenerator(multiplier = multipliedAmount, expireOnTurn = 1)
-        val generatedEffect = generator.generateEffectDecorator(baseEffect)
+        val manuallyDecoratedEffect =
+            AddGoldPerBaseGoldDecorator(baseEffect, additionalGoldPerBaseGold = multipliedAmount)
+        val expectedResult = manuallyDecoratedEffect.getGameStateChange(dummyGameState)
 
+        val generator =
+            AddGoldPerBaseGoldDecoratorGenerator(additionalGoldPerBaseGold = multipliedAmount, expireOnTurn = 1)
+        val generatedEffect = generator.generateEffectDecorator(baseEffect)
         val result = generatedEffect.getGameStateChange(dummyGameState)
-        val expectedResult = GameStateChange(goldGain = baseAmount * multipliedAmount)
-        assert(expectedResult == result)
+
+        assertEquals(expectedResult, result)
     }
 }

@@ -12,7 +12,7 @@ class GameManager(
     fun playGame() {
         while (gameState.currentTurn <= gameState.maxNumberOfTurns || isPlayerWinGameState() || isGenieWinGameState()) {
             performTurn()
-            gameState.copy(currentTurn = gameState.currentTurn + 1)
+            gameState = gameState.copy(currentTurn = gameState.currentTurn + 1)
         }
 
         if (isPlayerWinGameState()) {
@@ -83,7 +83,7 @@ class GameManager(
 
     private fun applyGameStateChange(gameStateChange: GameStateChange) {
         gameState = gameState.copy(
-            gold = gameState.gold + (gameStateChange.goldGain ?: 0),
+            currentGold = gameState.currentGold + gameStateChange.getTotalGoldGain(),
             activeEffectDecoratorGenerators =
                 gameState.activeEffectDecoratorGenerators + gameStateChange.addedGameEffectDecorators
         )
